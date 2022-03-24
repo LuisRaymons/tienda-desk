@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>803</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>801</width>
+      <height>601</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QFrame" name="frame_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>-10</y>
+       <width>201</width>
+       <height>611</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QTreeWidget" name="treeWidget">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>-15</y>
+        <width>201</width>
+        <height>900</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(0, 0, 0);
+color: rgb(255, 255, 255);</string>
+      </property>
+      <column>
+       <property name="text">
+        <string>Navigation</string>
+       </property>
+       <property name="foreground">
+        <brush brushstyle="NoBrush">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </property>
+      </column>
+      <item>
+       <property name="text">
+        <string>Dashboard</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>treeviewIcon/product-management.ico</normaloff>treeviewIcon/product-management.ico</iconset>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Categoria Producto</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>treeviewIcon/cateproduct.ico</normaloff>treeviewIcon/cateproduct.ico</iconset>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Cliente</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>treeviewIcon/client.ico</normaloff>treeviewIcon/client.ico</iconset>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Usuario</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>treeviewIcon/user.ico</normaloff>treeviewIcon/user.ico</iconset>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Producto</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>treeviewIcon/product.ico</normaloff>treeviewIcon/product.ico</iconset>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Almacen</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>treeviewIcon/almacen.ico</normaloff>treeviewIcon/almacen.ico</iconset>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Promotor</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>treeviewIcon/promotore.ico</normaloff>treeviewIcon/promotore.ico</iconset>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Compra</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>treeviewIcon/compra.ico</normaloff>treeviewIcon/compra.ico</iconset>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Venta</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>treeviewIcon/venta.ico</normaloff>treeviewIcon/venta.ico</iconset>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Recursos</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>treeviewIcon/recurso.ico</normaloff>treeviewIcon/recurso.ico</iconset>
+       </property>
+      </item>
+     </widget>
+    </widget>
+    <widget class="QFrame" name="frame_3">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>0</y>
+       <width>601</width>
+       <height>591</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(0, 0, 0);
+color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

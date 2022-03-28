@@ -1,10 +1,9 @@
-from PyQt5.QtGui import QIcon,QFont
 from PyQt5 import QtGui, QtCore,QtWidgets, Qt
+from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from view.Errors import ErrorGeneral
 from controller import PromotorController
-
 from config import env
 import cv2
 import os
@@ -18,7 +17,6 @@ class PromotorView:
         self.ctrpromotor = PromotorController.PromotorController()
         self.msm = ErrorGeneral.ErrorGeneral()
         self.rutaimg = ""
-        self.rutaimgedit = ""
     def getpromotores(self,token,pagina,registropagina):
         datatable = self.ctrpromotor.getpromotores(token,pagina,registropagina)
         if(datatable['code'] == 200):
@@ -33,7 +31,7 @@ class PromotorView:
             self.tableRefresh.setItem(i, 2, QTableWidgetItem(d['direccion']))
             self.tableRefresh.setItem(i, 3, QTableWidgetItem(d['telefono']))
             self.tableRefresh.setItem(i, 4, QTableWidgetItem(d['sitioWeb']))
-            self.tableRefresh.setItem(i, 5, QTableWidgetItem(QtGui.QIcon(QtGui.QPixmap(d['img'])),d['img'],1))
+            self.tableRefresh.setItem(i, 5, QTableWidgetItem(QtGui.QIcon(QtGui.QPixmap(env.URLRESOURCE + str(d['img']))),env.URLRESOURCE + str(d['img']),1))
     def createview(self,token,tab):
         labelnombre = QLabel("Nombre: ",tab)
         labelnombre.setGeometry(30,30,100,30)
@@ -70,7 +68,7 @@ class PromotorView:
         buttonimg.clicked.connect(lambda: self.fieldselected(1))
 
         buttonsaveproveedor = QPushButton(tab)
-        buttonsaveproveedor.setGeometry(30,270,400,30)
+        buttonsaveproveedor.setGeometry(30,270,460,30)
         buttonsaveproveedor.setText("Guardar")
         buttonsaveproveedor.setStyleSheet("QPushButton{background: #0000e6; color:#fff} QPushButton:hover{background:#000088; color:#fff;}")
         buttonsaveproveedor.clicked.connect(lambda: self.saveproveedor(token))
@@ -78,40 +76,23 @@ class PromotorView:
         self.img = QLabel(tab)
         self.img.setGeometry(700,30,400,400)
     def fieldselected(self,type):
-        self.fileFrame = QDialog()
+        self.fileFrame = QDialog(None, QtCore.Qt.WindowCloseButtonHint)
         self.fileFrame.setWindowTitle("Archivo para imagen")
         self.fileFrame.setFixedSize(320, 200)
         self.openFileNameDialog(type)
     def openFileNameDialog(self,type):
 
         options = QFileDialog.Options()
-        ##options |= QFileDialog.DontUseNativeDialog
-        filename, __ = QFileDialog.getOpenFileName(self.fileFrame,"Seleccione una imagen del producto", "","All Files (*);;PNG,JPG,JPEG Image(*.png,*.jpg,*.jpeg)", options=options)
+        self.rutaimg, __ = QFileDialog.getOpenFileName(self.fileFrame,"Seleccione una imagen del producto", "","All Files (*);;PNG,JPG,JPEG Image(*.png,*.jpg,*.jpeg)", options=options)
 
-        if filename:
-
-            file = filename.split('/')
-            namefile = file[len(file) - 1]
-            namefull = namefile.replace(" ","-")
-
-            imagen = cv2.imread(filename)
-
-            if not os.path.exists(env.IPRESOURCEIMG +'/promotor/'):
-                os.makedirs(env.IPRESOURCEIMG +'/promotor/')
-            cv2.imwrite(env.IPRESOURCEIMG +'/promotor/' + namefull, imagen)
-
-            ## ruta img  self.rutaimgedit
+        if self.rutaimg:
+            saveImgClient = QPixmap(self.rutaimg)
+            imgclient = saveImgClient.scaled(240,240)
 
             if(type == 1):
-                self.rutaimg = str(env.IPRESOURCEIMG +'/promotor/') + namefull
-                saveImgProduct = QtGui.QPixmap(filename)
-                imgProduct = saveImgProduct.scaled(240,240)
-                self.img.setPixmap(imgProduct)
+                self.img.setPixmap(imgclient) # ver imagen en create cliente
             elif(type == 2):
-                self.rutaimgedit = str(env.IPRESOURCEIMG +'/promotor/') + namefull
-                saveImgProduct = QtGui.QPixmap(filename)
-                imgProduct = saveImgProduct.scaled(240,240)
-                self.imgedit.setPixmap(imgProduct)
+                self.imgedit.setPixmap(imgclient)
     def saveproveedor(self,token):
         if(self.txtnombre.text() == ''):
             self.msm.messageInfo("Campo requerido","El nombre del promotor es requerido")
@@ -142,6 +123,8 @@ class PromotorView:
         self.txtdireccion.clear()
         self.txttelefono.clear()
         self.txtwebsite.clear()
+        self.img.clear()
+        self.rutaimg = ""
     def edit(self,token,data):
         self.frameedit = QDialog(None, QtCore.Qt.WindowCloseButtonHint)
         self.frameedit.setWindowModality(Qt.ApplicationModal)
@@ -209,13 +192,11 @@ class PromotorView:
             self.msm.messageInfo("Campo requerido","El telefono del promotor es requerido")
         else:
             args = {"api_token":token, "id":self.ideditpromotor,"name":self.txtnombreedit.text(),"address":self.txtdireccionedit.text(),"phone":self.txttelefonoedit.text(),"website":self.txtwebsiteedit.text()}
-            print(args)
-            print("-----------------------------")
 
-            if(self.rutaimgedit == ''):
+            if(self.rutaimg == ''):
                 files = {}
             else:
-                files = {'img': open(self.rutaimgedit,'rb')}
+                files = {'img': open(self.rutaimg,'rb')}
 
             guardar = self.msm.messageConfirm("Guardar Promotor","¿Quieres guardar al promotor?")
 
@@ -226,8 +207,8 @@ class PromotorView:
                     datos = self.getpromotores(token,1,20)
                     self.table(self.tableRefresh,datos['data'])
                     self.frameedit.close()
+                    self.rutaimg = ""
                 self.msm.messageInfo("Usuario " + promotorupdate['status'], promotorupdate['msm']);
-
     def delete(self,token,data):
         confirm = self.msm.messageConfirm("Confirmar eliminar a " + data[1],"¿Quieres continuar con la eliminacion del promotor?")
 

@@ -63,6 +63,7 @@ class VentaView:
 
         buttonaddproduct = QPushButton(tab)
         buttonaddproduct.setText("Agregar")
+        buttonaddproduct.setStyleSheet("QPushButton{background: #ff851c; color:#fff} QPushButton:hover{background:#ff741c; color:#fff;}")
         buttonaddproduct.setGeometry(470,80,80,30)
         buttonaddproduct.clicked.connect(lambda: self.addproductitem(token))
 
@@ -75,7 +76,7 @@ class VentaView:
         self.selectpago.addItems(self.pagos)
 
         btnsaveventa = QPushButton(tab)
-        btnsaveventa.setGeometry(30,180,500,30)
+        btnsaveventa.setGeometry(30,180,520,30)
         btnsaveventa.setText("Pagar")
         btnsaveventa.setStyleSheet("QPushButton{background: #0000ff; color:#fff} QPushButton:hover{background:#00008a; color:#fff;}")
         btnsaveventa.clicked.connect(lambda: self.pagarventa(token,userid))
@@ -99,9 +100,10 @@ class VentaView:
         if(producto == 'Seleccione el producto'):
             self.msm.messageError("Seleccione un producto", "Necesitas seleccionar un producto para poder agregarlo al carrito")
         else:
-            self.frameadditeminit = QDialog()
+            self.frameadditeminit = QDialog(None, QtCore.Qt.WindowCloseButtonHint)
+            self.frameadditeminit.setWindowIcon(QIcon('icon/tienda.png'))
             self.frameadditeminit.setWindowTitle("Agregar producto de " + producto)
-            self.frameadditeminit.setFixedSize(320, 200)
+            self.frameadditeminit.setFixedSize(320, 150)
 
             labelitems = QLabel("Cantidad: ", self.frameadditeminit)
             labelitems.setGeometry(30,30,100,30)
@@ -129,7 +131,7 @@ class VentaView:
             self.tableproduct.setItem(i,4,QTableWidgetItem(str(d['precioTotal'])))
     def editproducttableproduct(self,item):
 
-        self.frameadditems = QDialog()
+        self.frameadditems = QDialog(None, QtCore.Qt.WindowCloseButtonHint)
         self.frameadditems.setWindowTitle("Modicar producto de " + item[1])
         self.frameadditems.setFixedSize(320, 200)
 
@@ -188,10 +190,7 @@ class VentaView:
                 templist.append(dato)
                 self.frameadditems.close()
             self.datostablaproduct = templist;
-
-
-
-
+            
         self.filterduplicados()
         self.actualizarproductostable()
     def pagarventa(self,token,user):

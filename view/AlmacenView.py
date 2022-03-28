@@ -62,13 +62,12 @@ class AlmacenView:
         self.txtstock.setGeometry(100,130,400,30)
 
         btnguardar = QPushButton(self.frameedit)
-        btnguardar.setGeometry(30,180,450,30)
+        btnguardar.setGeometry(30,180,470,30)
         btnguardar.setText("Guardar")
         btnguardar.setStyleSheet("QPushButton{background: #0000e6; color:#fff} QPushButton:hover{background:#000088; color:#fff;}")
         btnguardar.clicked.connect(lambda: self.updatealmacen(token))
 
         self.frameedit.exec_()
-
     def updatealmacen(self,token):
 
         args = {"api_token":token,"id":self.idalmacenedit,"entry":self.txtentradas.text(),"exit":self.txtsalidas.text(),"stock":self.txtstock.text()}

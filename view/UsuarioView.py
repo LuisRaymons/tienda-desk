@@ -1,5 +1,5 @@
-from PyQt5.QtGui import QIcon,QFont
 from PyQt5 import QtGui, QtCore,QtWidgets, Qt
+from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from view.Errors import ErrorGeneral
@@ -30,7 +30,7 @@ class UsuarioView:
             self.tableRefresh.setItem(i, 1, QTableWidgetItem(d['name']))
             self.tableRefresh.setItem(i, 2, QTableWidgetItem(d['email']))
             self.tableRefresh.setItem(i, 3, QTableWidgetItem(d['type']))
-            self.tableRefresh.setItem(i, 4, QTableWidgetItem(QtGui.QIcon(QtGui.QPixmap(d['img'])),d['img'],1))
+            self.tableRefresh.setItem(i, 4, QTableWidgetItem(QtGui.QIcon(QtGui.QPixmap(env.URLRESOURCE + str(d['img']))),env.URLRESOURCE + str(d['img']),1))
     def createview(self,token,tab):
         labelnombre = QLabel("Nombre:", tab)
         labelnombre.setGeometry(30,30,110,30)
@@ -70,14 +70,14 @@ class UsuarioView:
         labelimg.setGeometry(30,280,110,30)
 
         buttonimg = QPushButton(tab)
-        buttonimg.setGeometry(100,280,400,30)
+        buttonimg.setGeometry(100,280,450,30)
         buttonimg.setIcon(QIcon('icon/seleccione.png'))
         buttonimg.setText("Seleccione Foto")
         buttonimg.setStyleSheet("QPushButton{background: #ff851c; color:#fff} QPushButton:hover{background:#ff741c; color:#fff;}")
         buttonimg.clicked.connect(lambda: self.fieldselected(1))
 
         buttonsabeclient = QPushButton(tab)
-        buttonsabeclient.setGeometry(30,330,470,30)
+        buttonsabeclient.setGeometry(30,330,520,30)
         buttonsabeclient.setText("Guardar")
         buttonsabeclient.setStyleSheet("QPushButton{background: #0000e6; color:#fff} QPushButton:hover{background:#000088; color:#fff;}")
         buttonsabeclient.clicked.connect(lambda: self.saveuser(token))
@@ -85,37 +85,23 @@ class UsuarioView:
         self.img = QLabel(tab)
         self.img.setGeometry(700,30,400,400)
     def fieldselected(self,type):
-        self.fileFrame = QDialog()
+        self.fileFrame = QDialog(None, QtCore.Qt.WindowCloseButtonHint)
         self.fileFrame.setWindowTitle("Archivo para imagen")
         self.fileFrame.setFixedSize(320, 200)
         self.openFileNameDialog(type)
     def openFileNameDialog(self,type):
 
         options = QFileDialog.Options()
-        ##options |= QFileDialog.DontUseNativeDialog
-        filename, __ = QFileDialog.getOpenFileName(self.fileFrame,"Seleccione una imagen del producto", "","All Files (*);;PNG,JPG,JPEG Image(*.png,*.jpg,*.jpeg)", options=options)
+        self.rutaimg, __ = QFileDialog.getOpenFileName(self.fileFrame,"Seleccione una imagen del producto", "","All Files (*);;PNG,JPG,JPEG Image(*.png,*.jpg,*.jpeg)", options=options)
 
-        if filename:
-
-            file = filename.split('/')
-            namefile = file[len(file) - 1]
-            namefull = namefile.replace(" ","-")
-
-            imagen = cv2.imread(filename)
-
-            if not os.path.exists(env.IPRESOURCEIMG +'/usuario/'):
-                os.makedirs(env.IPRESOURCEIMG +'/usuario/')
-            cv2.imwrite(env.IPRESOURCEIMG +'/usuario/' + namefull, imagen)
-
-            saveImgProduct = QtGui.QPixmap(filename)
-            imgProduct = saveImgProduct.scaled(240,240)
+        if self.rutaimg:
+            saveImgUser = QPixmap(self.rutaimg)
+            imguser = saveImgUser.scaled(240,240)
 
             if(type == 1):
-                self.rutaimg = str(env.IPRESOURCEIMG +'/usuario/') + namefull
-                self.img.setPixmap(imgProduct)
+                self.img.setPixmap(imguser) # ver imagen en create cliente
             elif(type == 2):
-                self.rutaimgedit = str(env.IPRESOURCEIMG +'/usuario/') + namefull
-                self.imgedit.setPixmap(imgProduct)
+                self.imgedit.setPixmap(imguser)
     def saveuser(self,token):
         if(self.txtnombre.text() == ''):
             self.msm.messageError("Campo requerido","El nombre del usuario es requerido")
@@ -139,7 +125,7 @@ class UsuarioView:
                 else:
                     files = {'img': open(self.rutaimg,'rb')}
 
-                guardar = self.msm.messageConfirm("Guardar usuario","¿Quieres Guardar al usuario?")
+                guardar = self.msm.messageConfirm("Guardar usuario","¿Quieres guardar al usuario?")
                 if(guardar == True):
                     user = self.ctrusuario.store(args,files)
                     if(user['code'] == 200):
@@ -147,7 +133,7 @@ class UsuarioView:
                         self.tableRefresh.clearContents()
                         datos = self.getusurios(token,1,20)
                         self.table(self.tableRefresh,datos['data'])
-                    self.msm.messageInfo("Usuario " + user['status'], user['msm']);
+                    self.msm.messageInfo("Usuario " + user['status'], user['msm'])
     def limpiarinput(self):
         self.txtnombre.clear()
         self.txtemail.clear()
@@ -159,6 +145,7 @@ class UsuarioView:
         self.txttype.addItem("Vendedor")
         self.txttype.addItem("Administrador")
         self.img.clear()
+        self.rutaimg = ""
     def edit(self,token,data):
 
         self.frameupdate = QDialog(None, QtCore.Qt.WindowCloseButtonHint)
@@ -223,14 +210,14 @@ class UsuarioView:
         labelimg.setGeometry(30,330,110,30)
 
         buttonimg = QPushButton(self.frameupdate)
-        buttonimg.setGeometry(100,330,400,30)
+        buttonimg.setGeometry(100,330,450,30)
         buttonimg.setIcon(QIcon('icon/seleccione.png'))
         buttonimg.setText("Seleccione Foto")
         buttonimg.setStyleSheet("QPushButton{background: #ff851c; color:#fff} QPushButton:hover{background:#ff741c; color:#fff;}")
         buttonimg.clicked.connect(lambda: self.fieldselected(2))
 
         buttonsabeclient = QPushButton(self.frameupdate)
-        buttonsabeclient.setGeometry(30,380,470,30)
+        buttonsabeclient.setGeometry(30,380,520,30)
         buttonsabeclient.setText("Guardar")
         buttonsabeclient.setStyleSheet("QPushButton{background: #0000e6; color:#fff} QPushButton:hover{background:#000088; color:#fff;}")
         buttonsabeclient.clicked.connect(lambda: self.saveupdateuser(token))
@@ -253,10 +240,10 @@ class UsuarioView:
                 typeuser = "Cliente" if self.txttypeedit.currentText() == "Selecciona el tipo de usuario" else self.txttypeedit.currentText()
                 args = {"api_token":token,"id":self.idedit,"name":self.txtnombreedit.text(),"email":self.txtemailedit.text(),"password":self.txtpasswordedit.text(),"confirmpassword":self.txtconfirmpassedit.text(),"typeuser":self.txttypeedit.currentText()}
 
-                if(self.rutaimgedit == ''):
+                if(self.rutaimg == ''):
                     files = {}
                 else:
-                    files = {'img': open(self.rutaimgedit,'rb')}
+                    files = {'img': open(self.rutaimg,'rb')}
 
                 guardar = self.msm.messageConfirm("Guardar usuario","¿Quieres Guardar al usuario?")
                 if(guardar == True):
@@ -266,19 +253,21 @@ class UsuarioView:
                         self.tableRefresh.clearContents()
                         datos = self.getusurios(token,1,20)
                         self.table(self.tableRefresh,datos['data'])
+                        self.rutaimg = ""
                     self.msm.messageInfo("Usuario " + useredit['status'], useredit['msm']);
     def changepassword(self,state):
+        print(state)
 
         if(state == 0):
             self.labelpassword.setVisible(False)
-            self.txtpassword.setVisible(False)
+            self.txtpasswordedit.setVisible(False)
             self.labelconfirmapassword.setVisible(False)
-            self.txtconfirmpass.setVisible(False)
+            self.txtconfirmpassedit.setVisible(False)
         elif(state == 2):
             self.labelpassword.setVisible(True)
-            self.txtpassword.setVisible(True)
+            self.txtpasswordedit.setVisible(True)
             self.labelconfirmapassword.setVisible(True)
-            self.txtconfirmpass.setVisible(True)
+            self.txtconfirmpassedit.setVisible(True)
     def delete(self,token,data,iduser):
         print(type(data[0]))
         print(type(iduser))

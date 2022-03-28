@@ -29,6 +29,7 @@ class CategoriaProductoView:
 
         btnGuardar = QPushButton("Guardar",tab)
         btnGuardar.setGeometry(30,80,450,30)
+        btnGuardar.setStyleSheet("QPushButton{background: #0000e6; color:#fff} QPushButton:hover{background:#000088; color:#fff;}")
         btnGuardar.clicked.connect(lambda: self.validastore(self.txtnombre.text(),token))
     def validastore(self,nombre,token):
         if(nombre != ''):
@@ -43,7 +44,7 @@ class CategoriaProductoView:
         else:
             self.msm.messageInfo("Campo requerido","Escribe el nombre de la categoria para continuar")
     def edit(self,token,data):
-        self.editframe = QDialog()
+        self.editframe = QDialog(None, QtCore.Qt.WindowCloseButtonHint)
         self.editframe.setWindowTitle("Modificar la categoria de producto " + data[1])
         self.editframe.setWindowIcon(QIcon('icon/tienda.png'))
         self.editframe.setFixedSize(500, 150)

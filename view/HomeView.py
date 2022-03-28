@@ -6,7 +6,7 @@ from pyqtgraph import PlotWidget, plot
 from controller import HomeController
 from view.Errors import ErrorGeneral
 from view.Loading import Loading
-from view import AlmacenView,CategoriaProductoView,ClienteView,CompraView,ProductoView,PromotorView,UsuarioView,VentaView
+from view import AlmacenView,CategoriaProductoView,ClienteView,CompraView,ProductoView,PromotorView,UsuarioView,VentaView,PrecioProductoView
 import sys
 import array
 import math
@@ -34,6 +34,7 @@ class HomeView(QMainWindow):
         self.viewpromotor = PromotorView.PromotorView()
         self.viewusuario = UsuarioView.UsuarioView()
         self.viewventa = VentaView.VentaView()
+        self.viewprecioproduct = PrecioProductoView.PrecioProductoView()
         self.loading = Loading.Loading()
 
         super(HomeView, self).__init__()
@@ -95,65 +96,34 @@ class HomeView(QMainWindow):
         self.treeWidget.headerItem().setForeground(0, brush)
         self.treeWidget.setContextMenuPolicy(Qt.CustomContextMenu)
         #self.treeWidget.customContextMenuRequested.connect(self.menuContextualmenu)
-        item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("treeviewIcon/product-management.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        item_0.setIcon(0, icon)
-        item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("treeviewIcon/cateproduct.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        item_0.setIcon(0, icon1)
-        item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("treeviewIcon/client.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        item_0.setIcon(0, icon2)
-        item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap("treeviewIcon/user.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        item_0.setIcon(0, icon3)
-        item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap("treeviewIcon/product.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        item_0.setIcon(0, icon4)
-        item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap("treeviewIcon/almacen.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        item_0.setIcon(0, icon5)
-        item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap("treeviewIcon/promotore.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        item_0.setIcon(0, icon6)
-        item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap("treeviewIcon/compra.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        item_0.setIcon(0, icon7)
-        item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-
-        icon8 = QtGui.QIcon()
-        icon8.addPixmap(QtGui.QPixmap("treeviewIcon/venta.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        item_0.setIcon(0, icon8)
-        item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-
-        icon9 = QtGui.QIcon()
-        icon9.addPixmap(QtGui.QPixmap("treeviewIcon/cerrarsession.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        item_0.setIcon(0, icon9)
-        item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
 
         self._translate = QtCore.QCoreApplication.translate
         self.widget.setWindowTitle(self._translate("Tienda LRVA", "Tienda LRVA"))
         self.treeWidget.headerItem().setText(0, self._translate("MainWindow", "Navigation"))
         __sortingEnabled = self.treeWidget.isSortingEnabled()
         self.treeWidget.setSortingEnabled(False)
-        self.treeWidget.topLevelItem(0).setText(0, self._translate("MainWindow", "Dashboard"))
-        self.treeWidget.topLevelItem(1).setText(0, self._translate("MainWindow", "Categoria Producto"))
-        self.treeWidget.topLevelItem(2).setText(0, self._translate("MainWindow", "Cliente"))
-        self.treeWidget.topLevelItem(3).setText(0, self._translate("MainWindow", "Usuario"))
-        self.treeWidget.topLevelItem(4).setText(0, self._translate("MainWindow", "Producto"))
-        self.treeWidget.topLevelItem(5).setText(0, self._translate("MainWindow", "Almacen"))
-        self.treeWidget.topLevelItem(6).setText(0, self._translate("MainWindow", "Promotor"))
-        self.treeWidget.topLevelItem(7).setText(0, self._translate("MainWindow", "Compra"))
-        self.treeWidget.topLevelItem(8).setText(0, self._translate("MainWindow", "Venta"))
-        self.treeWidget.topLevelItem(9).setText(0, self._translate("MainWindow", "Cerrar Session"))
+
+        #menudatos = ["Dashboard","Categoria Producto","Cliente","Usuario","Producto","Almacen","Compra","Venta","Precio de producto","Cerrar Session"]
+        menudatos = [{"name":"Dashboard", "iconfonst":"treeviewIcon/product-management.ico"},
+                     {"name":"Categoria Producto", "iconfonst":"treeviewIcon/cateproduct.ico"},
+                     {"name":"Cliente", "iconfonst":"treeviewIcon/client.ico"},
+                     {"name":"Usuario", "iconfonst":"treeviewIcon/user.ico"},
+                     {"name":"Producto", "iconfonst":"treeviewIcon/product.ico"},
+                     {"name":"Almacen", "iconfonst":"treeviewIcon/almacen.ico"},
+                     {"name":"Promotor","iconfonst":"treeviewIcon/promotore.ico"},
+                     {"name":"Compra", "iconfonst":"treeviewIcon/compra.ico"},
+                     {"name":"Venta", "iconfonst":"treeviewIcon/venta.ico"},
+                     {"name":"Precio de producto", "iconfonst":"treeviewIcon/precio.ico"},
+                     {"name":"Cerrar Session", "iconfonst":"treeviewIcon/cerrarsession.ico"}]
+
+        for menu in enumerate(menudatos):
+
+            item = QtWidgets.QTreeWidgetItem(self.treeWidget)
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap(str(menu[1]['iconfonst'])), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            item.setIcon(0, icon)
+            self.treeWidget.topLevelItem(menu[0]).setText(0, self._translate("MainWindow", str(menu[1]['name'])))
+
         self.treeWidget.setSortingEnabled(__sortingEnabled)
         self.treeWidget.clicked.connect(self.getValue)
     def getValue(self, ix=""):
@@ -190,6 +160,9 @@ class HomeView(QMainWindow):
         elif(self.opcionSelect == 'Venta'):
             datatable = self.viewventa.getventas(self.token,pagina,registropagina)
             self.table(columnas,numcolumnas,datatable,self.opcionSelect,registropagina,pagina)
+        elif(self.opcionSelect == 'Precio de producto'):
+            datatable = self.viewprecioproduct.getproductosprecio(self.token,pagina,registropagina)
+            self.table(columnas,numcolumnas,datatable,self.opcionSelect,registropagina,pagina)
         elif(self.opcionSelect == 'Cerrar Session'):
             self.close()
             self.loginview.show()
@@ -221,7 +194,7 @@ class HomeView(QMainWindow):
         btnnumpagina.addItems(paginas)
         position = 0
 
-        paginasfull = math.ceil(int(data['total'])/int(registropagina))
+        paginasfull = 1 if(data == None) else math.ceil(int(data['total'])/int(registropagina))
 
         for i in range(len(paginas)):
             if(paginas[i] == registropagina):
@@ -241,12 +214,14 @@ class HomeView(QMainWindow):
         self.paginatext.setMaximum(paginasfull)
         self.paginatext.valueChanged.connect(lambda: self.changevalorpaginado(data,btnnumpagina.currentText(),type))
         self.paginatext.setGeometry(120,10,100,30)
+        numeroregistroinsertados = 1 if(data == None) else int(data['registerpag'])
+        #numeroregistroinsertados = 1 if(data == None) else int(data['data'])
 
         #tabla
         self.tableWidget = QtWidgets.QTableWidget(self.tab)
         self.tableWidget.setGeometry(QtCore.QRect(0, 50, 1100, 570))
         self.tableWidget.setColumnCount(numcolumnas) # Numero de columnas
-        self.tableWidget.setRowCount(int(data['registerpag']))   #  numero de registros insertados
+        self.tableWidget.setRowCount(numeroregistroinsertados)   #  numero de registros insertados
         self.tableWidget.setHorizontalHeaderLabels(columnas) # Nombre de las columnas
         self.tableWidget.setAlternatingRowColors(True)
         self.tableWidget.setWordWrap(False)
@@ -258,36 +233,61 @@ class HomeView(QMainWindow):
         self.tableWidget.customContextMenuRequested.connect(self.submenutable)
         item = self.tableWidget.item(10, 3)
 
+        if(data != None):
+            if type == "Categoria Producto":
+                self.viewcategoria.table(self.tableWidget,data['data'])
+            elif type == "Cliente":
+                self.viewcliente.table(self.tableWidget,data['data'])
+            elif type == "Usuario":
+                self.viewusuario.table(self.tableWidget,data['data'])
+            elif type == "Producto":
+                self.viewproducto.table(self.tableWidget,data['data'])
+            elif type == "Almacen":
+                self.viewalmacen.table(self.tableWidget,data['data'])
+            elif type == "Promotor":
+                self.viewpromotor.table(self.tableWidget,data['data'])
+            elif type == "Compra":
+                self.viewcompre.table(self.tableWidget,data['data'])
+            elif type == "Venta":
+                self.viewventa.table(self.tableWidget,data['data'])
+            elif(type == "Precio de producto"):
+                self.viewprecioproduct.table(self.tableWidget,data['data'])
+
+
+
         if type == "Categoria Producto":
-            self.viewcategoria.table(self.tableWidget,data['data'])
+
             if(self.login['type'] in ('Administrador')):
                 self.viewcategoria.createview(self.token,self.tab_2)
         elif type == "Cliente":
-            self.viewcliente.table(self.tableWidget,data['data'])
+
             if(self.login['type'] in ('Administrador')):
                 self.viewcliente.createview(self.token,self.tab_2)
         elif type == "Usuario":
-            self.viewusuario.table(self.tableWidget,data['data'])
+
             if(self.login['type'] in ('Administrador')):
                 self.viewusuario.createview(self.token,self.tab_2)
         elif type == "Producto":
-            self.viewproducto.table(self.tableWidget,data['data'])
+
             if(self.login['type'] in ('Administrador')):
                 self.viewproducto.createview(self.token,self.tab_2)
         elif type == "Almacen":
-            self.viewalmacen.table(self.tableWidget,data['data'])
+            print("Entre......")
         elif type == "Promotor":
-            self.viewpromotor.table(self.tableWidget,data['data'])
+
             if (self.login['type'] in('Administrador')):
                 self.viewpromotor.createview(self.token,self.tab_2)
         elif type == "Compra":
-            self.viewcompre.table(self.tableWidget,data['data'])
+
             if(self.login['type'] in('Administrador')):
                 self.viewcompre.createview(self.token,self.tab_2,self.login['id'])
         elif type == "Venta":
-            self.viewventa.table(self.tableWidget,data['data'])
+
             if(self.login['type'] in('Administrador','Vendedor')):
                 self.viewventa.createview(self.token,self.tab_2,self.login['id'])
+
+        elif type ==  'Precio de producto':
+            self.viewprecioproduct.createview(self.token,self.tab_2)
 
         self.frameTable.show()
     def builtcolumns(self,type):
@@ -309,6 +309,8 @@ class HomeView(QMainWindow):
             lista = ["id","folio","cantidad_stock","precio_total","img","promotor","producto"]
         elif(type == "Venta"):
             lista = ["id","factura", "precio_total", "pago", "cliente", "usuario"]
+        elif(type == "Precio de producto"):
+            lista = ["id","producto","precio"]
         return lista
     def changevalorpaginado(self,data,registerpag,type):
 
@@ -356,12 +358,27 @@ class HomeView(QMainWindow):
 
         if(indice):
             menu = QMenu()
-            if(self.login['type'] in ('Administrador') and self.opcionSelect not in('Venta')):
+
+            # opciones para administrador
+            if(self.login['type'] == 'Administrador' and self.opcionSelect in('Dashboard','Categoria Producto','Cliente','Usuario','Producto','Almacen','Promotor','Compra','Precio de producto')):
                 update = menu.addAction(QIcon('icon/actualizar.ico'),"Modificar", lambda: self.modificarfilatabla(fila))
                 menu.addSeparator()
-            if(self.login['type'] in ('Administrador') and self.opcionSelect not in('Almacen','Venta')):
+            if(self.login['type'] ==  'Administrador' and self.opcionSelect in('Dashboard','Categoria Producto','Cliente','Usuario','Producto','Almacen','Promotor','Compra','Precio de producto')):
                 destroyMenu = menu.addAction(QIcon('icon/destroy.ico'),"Eliminar", lambda: self.destroyfilatable(fila))
                 menu.addSeparator()
+
+            # PErmisos para vendedor
+            if(self.login['type'] == 'Vendedor' and self.opcionSelect in('Categoria Producto','Producto','Compra')):
+                update = menu.addAction(QIcon('icon/actualizar.ico'),"Modificar", lambda: self.modificarfilatabla(fila))
+                menu.addSeparator()
+            if(self.login['type'] == 'Vendedor' and self.opcionSelect in('Categoria Producto','Producto','Compra')):
+                destroyMenu = menu.addAction(QIcon('icon/destroy.ico'),"Eliminar", lambda: self.destroyfilatable(fila))
+                menu.addSeparator()
+
+
+
+
+
             menu.exec_(self.tableWidget.viewport().mapToGlobal(position))
     def modificarfilatabla(self,data):
 
@@ -381,6 +398,8 @@ class HomeView(QMainWindow):
             self.viewcompre.edit(self.token,self.login['id'],data)
         elif(self.opcionSelect == 'Venta'):
             print("hola")
+        elif(self.opcionSelect == 'Precio de producto'):
+            self.viewprecioproduct.edit(self.token,data)
     def destroyfilatable(self,data):
 
         if(self.opcionSelect == 'Categoria Producto'):
@@ -399,6 +418,8 @@ class HomeView(QMainWindow):
             self.viewcompre.delete(self.token,data)
         elif(self.opcionSelect == 'Venta'):
             print("hola")
+        elif(self.opcionSelect == 'Precio de producto'):
+            self.viewprecioproduct.delete(self.token,data)
 
     #reloj
     def showTime(self):

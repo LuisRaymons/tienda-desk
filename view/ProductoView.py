@@ -1,5 +1,5 @@
-from PyQt5.QtGui import QIcon,QFont
 from PyQt5 import QtGui, QtCore,QtWidgets, Qt
+from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from view.Errors import ErrorGeneral
@@ -34,7 +34,7 @@ class ProductoView:
             self.tableRefresh.setItem(i, 1, QTableWidgetItem(d['nombrepoducto']))
             self.tableRefresh.setItem(i, 2, QTableWidgetItem(d['descripcion']))
             self.tableRefresh.setItem(i, 3, QTableWidgetItem(d['precioPorKilo']))
-            self.tableRefresh.setItem(i, 4, QTableWidgetItem(QtGui.QIcon(QtGui.QPixmap(d['img'])),d['img'],1))
+            self.tableRefresh.setItem(i, 4, QTableWidgetItem(QtGui.QIcon(QtGui.QPixmap(env.URLRESOURCE + str(d['img']))),env.URLRESOURCE + str(d['img']),1))
             self.tableRefresh.setItem(i, 5, QTableWidgetItem(d['nombrecategoria']))
     def createview(self,token,tab):
         categorias = self.ctrproducto.loadingcategorias(token)
@@ -83,45 +83,29 @@ class ProductoView:
         buttonsaveproduct = QPushButton(tab)
         buttonsaveproduct.setText("Guardar")
         buttonsaveproduct.setStyleSheet("QPushButton{background: #0000e6; color:#fff} QPushButton:hover{background:#000088; color:#fff;}")
-        buttonsaveproduct.setGeometry(30,350,550,30)
+        buttonsaveproduct.setGeometry(30,350,470,30)
         buttonsaveproduct.clicked.connect(lambda: self.storeproduct(token))
 
         self.img = QLabel(tab)
         self.img.setGeometry(700,30,400,400)
     def fieldselected(self,type):
-        self.fileFrame = QDialog()
+        self.fileFrame = QDialog(None, QtCore.Qt.WindowCloseButtonHint)
         self.fileFrame.setWindowTitle("Archivo para imagen")
         self.fileFrame.setFixedSize(320, 200)
         self.openFileNameDialog(type)
     def openFileNameDialog(self,type):
 
         options = QFileDialog.Options()
-        ##options |= QFileDialog.DontUseNativeDialog
-        filename, __ = QFileDialog.getOpenFileName(self.fileFrame,"Seleccione una imagen del producto", "","All Files (*);;PNG,JPG,JPEG Image(*.png,*.jpg,*.jpeg)", options=options)
+        self.rutaimg, __ = QFileDialog.getOpenFileName(self.fileFrame,"Seleccione una imagen del producto", "","All Files (*);;PNG,JPG,JPEG Image(*.png,*.jpg,*.jpeg)", options=options)
 
-        if filename:
+        if self.rutaimg:
+            saveImgClient = QPixmap(self.rutaimg)
+            imgclient = saveImgClient.scaled(240,240)
 
-            file = filename.split('/')
-            namefile = file[len(file) - 1]
-            namefull = namefile.replace(" ","-")
-
-            imagen = cv2.imread(filename)
-
-            if not os.path.exists(env.IPRESOURCEIMG +'/clientes/'):
-                os.makedirs(env.IPRESOURCEIMG +'/clientes/')
-            cv2.imwrite(env.IPRESOURCEIMG +'/clientes/' + namefull, imagen)
-
-            ## ruta img
             if(type == 1):
-                self.rutaimg = str(env.IPRESOURCEIMG +'/clientes/') + namefull
-                saveImgProduct = QtGui.QPixmap(filename)
-                imgProduct = saveImgProduct.scaled(240,240)
-                self.img.setPixmap(imgProduct)
+                self.img.setPixmap(imgclient) # ver imagen en create cliente
             elif(type == 2):
-                self.rutaimgedit = str(env.IPRESOURCEIMG +'/clientes/') + namefull
-                saveImgProduct = QtGui.QPixmap(filename)
-                imgProduct = saveImgProduct.scaled(120,120)
-                self.imgedit.setPixmap(imgProduct)
+                self.imgedit.setPixmap(imgclient)
     def storeproduct(self,token):
         if(self.txtnombre.text() == ''):
             self.msm.messageError("Campo requerido","El nombre del producto es requerido")
@@ -138,7 +122,7 @@ class ProductoView:
             else:
                 files = {'img': open(self.rutaimg,'rb')}
 
-            guardar = self.msm.messageConfirm("Guardar producto","¿Quieres Guardar al producto?")
+            guardar = self.msm.messageConfirm("Guardar producto","¿Quieres guardar al producto?")
             if(guardar == True):
                 product = self.ctrproducto.store(args,files)
                 if(product['code'] == 200):
@@ -155,12 +139,13 @@ class ProductoView:
         self.selectcategorias.addItem("Seleccione una categoria")
         self.selectcategorias.addItems(self.categorias)
         self.img.clear()
+        self.rutaimg = ""
     def edit(self,token,data):
         self.frameedit = QDialog(None, QtCore.Qt.WindowCloseButtonHint)
         self.frameedit.setWindowModality(Qt.ApplicationModal)
         self.frameedit.setWindowTitle("Modificar al producto " + data[1])
         self.frameedit.setWindowIcon(QIcon('icon/tienda.png'))
-        self.frameedit.setFixedSize(750, 500)
+        self.frameedit.setFixedSize(800, 500)
 
         self.ideditproducto = data[0]
 
@@ -220,7 +205,7 @@ class ProductoView:
         buttonsaveproductedit = QPushButton(self.frameedit)
         buttonsaveproductedit.setText("Guardar")
         buttonsaveproductedit.setStyleSheet("QPushButton{background: #0000e6; color:#fff} QPushButton:hover{background:#000088; color:#fff;}")
-        buttonsaveproductedit.setGeometry(30,350,550,30)
+        buttonsaveproductedit.setGeometry(30,350,470,30)
         buttonsaveproductedit.clicked.connect(lambda: self.updateproduct(token))
 
         self.imgedit = QLabel(self.frameedit)
@@ -245,6 +230,7 @@ class ProductoView:
                 datos = self.getproductos(token,1,20)
                 self.table(self.tableRefresh,datos['data'])
                 self.frameedit.close()
+                self.rutaimg = ""
             self.msm.messageInfo("Producto " + productedit['status'], productedit['msm']);
     def delete(self,token,data):
         confirm = self.msm.messageConfirm("Confirmar eliminar a " + data[1],"¿Quieres continuar con la eliminacion del producto?")

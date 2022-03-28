@@ -1,5 +1,5 @@
-from PyQt5.QtGui import QIcon,QFont
 from PyQt5 import QtGui, QtCore,QtWidgets, Qt
+from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtMultimedia import *
@@ -19,7 +19,6 @@ class CompraView:
         self.productos = []
         self.promotores = []
         self.rutaimg = "";
-        self.rutaimgedit = "";
     def getcompras(self,token,pagina,registropagina):
         datatable = self.ctrcompra.getcompras(token,pagina,registropagina)
         if(datatable['code'] == 200):
@@ -90,7 +89,7 @@ class CompraView:
         self.selectpromotor.setGeometry(90,230,400,30)
 
         buttonsaveproveedor = QPushButton(tab)
-        buttonsaveproveedor.setGeometry(30,280,400,30)
+        buttonsaveproveedor.setGeometry(30,280,460,30)
         buttonsaveproveedor.setText("Guardar")
         buttonsaveproveedor.setStyleSheet("QPushButton{background: #0000e6; color:#fff} QPushButton:hover{background:#000088; color:#fff;}")
         buttonsaveproveedor.clicked.connect(lambda: self.savecompra(token))
@@ -98,38 +97,23 @@ class CompraView:
         self.img = QLabel(tab)
         self.img.setGeometry(700,30,400,400)
     def fieldselected(self,type):
-        self.fileFrame = QDialog()
+        self.fileFrame = QDialog(None, QtCore.Qt.WindowCloseButtonHint)
         self.fileFrame.setWindowTitle("Archivo para imagen")
         self.fileFrame.setFixedSize(320, 200)
         self.openFileNameDialog(type)
     def openFileNameDialog(self,type):
 
         options = QFileDialog.Options()
-        ##options |= QFileDialog.DontUseNativeDialog
-        filename, __ = QFileDialog.getOpenFileName(self.fileFrame,"Seleccione el ticket de la compra", "","All Files (*);;PNG,JPG,JPEG Image(*.png,*.jpg,*.jpeg)", options=options)
+        self.rutaimg, __ = QFileDialog.getOpenFileName(self.fileFrame,"Seleccione el ticket de la compra", "","All Files (*);;PNG,JPG,JPEG Image(*.png,*.jpg,*.jpeg)", options=options)
 
-        if filename:
-
-            file = filename.split('/')
-            namefile = file[len(file) - 1]
-            namefull = namefile.replace(" ","-")
-
-            imagen = cv2.imread(filename)
-
-            if not os.path.exists(env.IPRESOURCEIMG +'/compra/'):
-                os.makedirs(env.IPRESOURCEIMG +'/compra/')
-            cv2.imwrite(env.IPRESOURCEIMG +'/compra/' + namefull, imagen)
+        if self.rutaimg:
+            saveImgClient = QPixmap(self.rutaimg)
+            imgclient = saveImgClient.scaled(240,240)
 
             if(type == 1):
-                self.rutaimg = str(env.IPRESOURCEIMG +'/compra/') + namefull
-                saveImgProduct = QtGui.QPixmap(filename)
-                imgProduct = saveImgProduct.scaled(240,240)
-                self.img.setPixmap(imgProduct)
+                self.img.setPixmap(imgclient) # ver imagen en create cliente
             elif(type == 2):
-                self.rutaimgedit = str(env.IPRESOURCEIMG +'/compra/') + namefull
-                saveImgProduct = QtGui.QPixmap(filename)
-                imgProduct = saveImgProduct.scaled(240,240)
-                self.imgedit.setPixmap(imgProduct)
+                self.imgedit.setPixmap(imgclient)
     def savecompra(self,token):
         if(self.txtcantidad.text() == ''):
             self.msm.messageError("Campo requerido","La cantidad de productos a comprar es requerido")
@@ -160,6 +144,7 @@ class CompraView:
         self.selectproduct.clear()
         self.selectpromotor.clear()
         self.img.clear()
+        self.rutaimg = "";
         self.selectproduct.addItem("Seleccione un producto")
         self.selectproduct.addItems(self.productos)
         self.selectpromotor.addItem("Seleccione un promotor")
@@ -267,7 +252,7 @@ class CompraView:
             args = {"api_token":token,"id":self.idcompraedit,"stock":self.txtcantidadedit.text(),"precio":self.txtpricetotaledit.text(),"producto":self.selectproductedit.currentText(),"promotor":self.selectpromotoredit.currentText(),"user":self.useridedit}
 
             if(self.rutaimg != ''):
-                files = {'img': open(self.rutaimgedit,'rb')}
+                files = {'img': open(self.rutaimg,'rb')}
             else:
                 files = "";
 

@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtGui import QIcon
-
 from view.Errors import ErrorGeneral
 from controller import ClienteController
 from controller import HomeController
@@ -21,7 +20,6 @@ class ClienteView:
         self.msm = ErrorGeneral.ErrorGeneral()
         self.colonias = []
         self.rutaimg = ""
-        self.rutaimgedit = ""
     def getclientes(self,token,pagina,registropagina):
         datatable = self.ctrCliente.getclientes(token,pagina,registropagina)
         if(datatable['code'] == 200):
@@ -44,7 +42,7 @@ class ClienteView:
             self.imgicon = QLabel()
             self.imgicon.setPixmap(imgclent)
             """
-            self.tableRefresh.setItem(i, 7, QTableWidgetItem(QtGui.QIcon(QtGui.QPixmap(d['img'])),d['img'],1))
+            self.tableRefresh.setItem(i, 7, QTableWidgetItem(QtGui.QIcon(QtGui.QPixmap(env.URLRESOURCE + str(d['img']))),env.URLRESOURCE + str(d['img']),1))
             #self.tableRefresh.setCellWidget(i, 7, self.imgicon)
     def createview(self, token,tab):
         labelnombre = QLabel("Nombre: ", tab)
@@ -129,38 +127,23 @@ class ClienteView:
                     for col in datos:
                         self.selectcoloniaedit.addItem(col['colonia'])
     def fieldselected(self,type):
-        self.fileFrame = QDialog()
+        self.fileFrame = QDialog(None, QtCore.Qt.WindowCloseButtonHint)
         self.fileFrame.setWindowTitle("Archivo para imagen")
         self.fileFrame.setFixedSize(320, 200)
         self.openFileNameDialog(type)
     def openFileNameDialog(self,type):
 
         options = QFileDialog.Options()
-        ##options |= QFileDialog.DontUseNativeDialog
-        filename, __ = QFileDialog.getOpenFileName(self.fileFrame,"Seleccione una imagen del producto", "","All Files (*);;PNG,JPG,JPEG Image(*.png,*.jpg,*.jpeg)", options=options)
+        self.rutaimg, __ = QFileDialog.getOpenFileName(self.fileFrame,"Seleccione una imagen del producto", "","All Files (*);;PNG,JPG,JPEG Image(*.png,*.jpg,*.jpeg)", options=options)
 
-        if filename:
-
-            file = filename.split('/')
-            namefile = file[len(file) - 1]
-            namefull = namefile.replace(" ","-")
-
-            imagen = cv2.imread(filename)
-
-            if not os.path.exists(env.IPRESOURCEIMG +'/clientes/'):
-                os.makedirs(env.IPRESOURCEIMG +'/clientes/')
-            cv2.imwrite(env.IPRESOURCEIMG +'/clientes/' + namefull, imagen)
+        if self.rutaimg:
+            saveImgClient = QPixmap(self.rutaimg)
+            imgclient = saveImgClient.scaled(240,240)
 
             if(type == 1):
-                self.rutaimg = str(env.IPRESOURCEIMG +'/clientes/') + namefull
-                saveImgClient = QPixmap(filename)
-                imgProduct = saveImgClient.scaled(240,240)
-                self.img.setPixmap(imgProduct) # ver imagen en create cliente
+                self.img.setPixmap(imgclient) # ver imagen en create cliente
             elif(type == 2):
-                self.rutaimgedit = str(env.IPRESOURCEIMG +'/clientes/') + namefull
-                saveImgClientedit = QPixmap(filename)
-                imgClientedit = saveImgClientedit.scaled(180,180)
-                self.imgedit.setPixmap(imgClientedit)
+                self.imgedit.setPixmap(imgclient)
     def limpiarinput(self):
         self.txtnombre.clear()
         self.txtlasname.clear()
@@ -170,6 +153,7 @@ class ClienteView:
         self.txtcolonia.clear()
         self.txtcolonia.addItem("Seleccione una colonia")
         self.img.clear()
+        self.rutaimg = ""
     def saveclient(self,token):
 
         if(self.txtnombre.text() == ''):
@@ -181,6 +165,8 @@ class ClienteView:
         elif(self.txtdireccion.text() == ''):
             self.msm.messageInfo("Campo requerido", "La dirreccion del cliente es requerido")
         else:
+            print("------------Dato de la imagen status-------------------")
+            print(self.rutaimg)
             args = {"api_token":token,"name":self.txtnombre.text(),"lastname":self.txtlasname.text(),"phone":self.txttelefono.text(),"address":self.txtdireccion.text(),"cp":self.txtcp.text(),"colonia":self.txtcolonia.currentText()}
 
             if(self.rutaimg == ''):
@@ -201,7 +187,7 @@ class ClienteView:
         self.frameedit.setWindowModality(Qt.ApplicationModal)
         self.frameedit.setWindowTitle("Modificar al cliente " + data[1])
         self.frameedit.setWindowIcon(QIcon('icon/tienda.png'))
-        self.frameedit.setFixedSize(750, 500)
+        self.frameedit.setFixedSize(800, 500)
 
         self.idclienteupdate = data[0];
 
@@ -286,10 +272,10 @@ class ClienteView:
             args = {"api_token":token,"id":self.idclienteupdate,"name":self.txtnombreedit.text(),"lastname":self.txtapellidoedit.text(),"phone":self.txttelefonoedit.text(),"address":self.txtdireccionedit.text(),
                     "cp":self.txtcpedit.text(),"colonia":self.selectcoloniaedit.currentText()}
 
-            if(self.rutaimgedit == ''):
+            if(self.rutaimg == ''):
                 files = {}
             else:
-                files = {'img': open(self.rutaimgedit,'rb')}
+                files = {'img': open(self.rutaimg,'rb')}
 
             guardar = self.msm.messageConfirm("Guardar cliente","¿Quieres Guardar al cliente?")
 
@@ -302,6 +288,7 @@ class ClienteView:
                     self.tableRefresh.clearContents()
                     datos = self.getclientes(token,1,20)
                     self.table(self.tableRefresh,datos['data'])
+                    self.rutaimg = ""
                 self.msm.messageInfo("Cliente " + clienteupdate['status'], clienteupdate['msm']);
     def delete(self,token,data):
 

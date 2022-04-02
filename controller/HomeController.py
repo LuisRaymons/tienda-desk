@@ -16,16 +16,21 @@ class HomeController:
         response = requests.post(url,params=args)
         data = response.json()
         return data
-
     def loadingventas(self,token):
         url = config.APIREQUEST + "venta/total/mes"
         args = {"api_token":token}
         response = requests.post(url,params=args)
         data = response.json()
         return data
-
     def loadingventasone(self,token,id):
         url = config.APIREQUEST + "venta/total/mes/" + str(id)
+        args = {"api_token":token}
+        response = requests.post(url,params=args)
+        data = response.json()
+        return data
+
+    def loadingdatosproductinexistent(self,token):
+        url = config.APIREQUEST + "producto/inexistentes"
         args = {"api_token":token}
         response = requests.post(url,params=args)
         data = response.json()

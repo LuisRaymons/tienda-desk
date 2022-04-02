@@ -43,6 +43,7 @@ class HomeView(QMainWindow):
         self.setWindowTitle("Tienda LRVA")
         self.setWindowIcon(QIcon('icon/tienda.png'))
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint);
+        self.productexists = 0
 
         #Cargar charts
         self.charts()
@@ -440,24 +441,63 @@ class HomeView(QMainWindow):
 
     # Apartados de charts
     def charts(self):
-        #self.loading.start()
+        #self.loading.start()    self.resize(1300, 650)
 
         self.framecharts = QtWidgets.QWidget(self)
         self.framecharts.setGeometry(QtCore.QRect(192, 0, 1100, 700))
         self.framecharts.setObjectName("charts")
         self.framecharts.setStyleSheet("background-color: #fff") # red
 
+        _translategrafig = QtCore.QCoreApplication.translate
+
+        self.tabWidgetgrafic = QtWidgets.QTabWidget(self.framecharts) # QWidget
+        self.tabWidgetgrafic.setGeometry(QtCore.QRect(0, 0, 1265, 700))
+        self.tabWidgetgrafic.setObjectName("tabWidget")
+        self.tabgrafic = QtWidgets.QWidget()
+        self.tabgrafic.setObjectName("tab")
+        self.tabWidgetgrafic.addTab(self.tabgrafic, "")
+        self.tabgrafic_2 = QtWidgets.QWidget()
+        self.tabgrafic_2.setObjectName("tab_2")
+
+        paginas = ['20','30','50','80','100']
+
+        self.tabWidgetgrafic.addTab(self.tabgrafic_2, "")
+        self.tabWidgetgrafic.setTabText(self.tabWidgetgrafic.indexOf(self.tabgrafic), _translategrafig("MainWindow", "Almacen"))
+        self.tabWidgetgrafic.setTabText(self.tabWidgetgrafic.indexOf(self.tabgrafic_2), _translategrafig("MainWindow", "Charts"))
+
+        self.inexistenteproduct()
         self.graficaone()
 
         if(self.login['type'] in('Administrador')):
             self.graficatwo()
-
-
         self.framecharts.show()
         #self.loading.stop()
+
+    def inexistenteproduct(self):
+        # Imprimir una tabla de productos faltantes
+        self.tableproductinexistencia = QtWidgets.QTableWidget(self.tabgrafic)
+        self.tableproductinexistencia.setGeometry(QtCore.QRect(10, 50, 1080, 575))
+        self.tableproductinexistencia.setColumnCount(2)
+        self.tableproductinexistencia.setHorizontalHeaderLabels(['cantidad','nombre'])
+        self.tableproductinexistencia.setAlternatingRowColors(True)
+        self.tableproductinexistencia.setWordWrap(False)
+        self.tableproductinexistencia.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.tableproductinexistencia.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tableproductinexistencia.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tableproductinexistencia.horizontalHeader().setStretchLastSection(True)
+        self.tableproductinexistencia.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.tableproductinexistencia.setContextMenuPolicy(Qt.CustomContextMenu)
+
+        self.loadingdatainexistentproduct()
+
+        labelproductexist = QLabel("Te faltan " + str(self.productexists) + " productos en almacen",self.tabgrafic)
+        labelproductexist.setGeometry(300,0,450,50)
+        labelproductexist.setFont(QFont('Arial', 20))
+        labelproductexist.setStyleSheet("QLabel{color:red;}")
+
     def graficaone(self):
-        self.framechartone = QtWidgets.QWidget(self)
-        self.framechartone.setGeometry(QtCore.QRect(200, 50, 500, 300))
+        self.framechartone = QtWidgets.QWidget(self.tabgrafic_2)
+        self.framechartone.setGeometry(QtCore.QRect(0, 0, 500, 300))
         self.framechartone.setObjectName("chartone")
         self.framechartone.setStyleSheet("background-color: #fff") # fondo blanco
 
@@ -484,11 +524,10 @@ class HomeView(QMainWindow):
             self.graphWidget.setLabel('bottom', "<span style=\"color:red;font-size:20px\">Mes (M)</span>")
             self.graphWidget.addLegend()
 
-
         self.framechartone.show()
     def graficatwo(self):
-        self.framecharttwo = QtWidgets.QWidget(self)
-        self.framecharttwo.setGeometry(QtCore.QRect(700, 50, 500, 300))
+        self.framecharttwo = QtWidgets.QWidget(self.tabgrafic_2)
+        self.framecharttwo.setGeometry(QtCore.QRect(500, 0, 500, 300))
         self.framecharttwo.setObjectName("chartone")
         self.framecharttwo.setStyleSheet("background-color: #fff") # fondo blanco
 
@@ -535,3 +574,15 @@ class HomeView(QMainWindow):
         return random.randint(0, 255)
     def generarcolorB(self):
         return random.randint(0, 255)
+
+    def loadingdatainexistentproduct(self):
+        datos = self.ctrhome.loadingdatosproductinexistent(self.login['api_token'])
+
+        if(datos['code'] == 200):
+            data = datos['data'];
+            self.productexists = len(datos['data'])
+            self.tableproductinexistencia.setRowCount(int(len(datos['data'])))
+
+            for i,producto in enumerate(datos['data']):
+                self.tableproductinexistencia.setItem(i,0,QTableWidgetItem(str(producto['stock'])))
+                self.tableproductinexistencia.setItem(i,1,QTableWidgetItem(producto['nombre']))

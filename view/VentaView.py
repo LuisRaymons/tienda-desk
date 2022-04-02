@@ -190,7 +190,7 @@ class VentaView:
                 templist.append(dato)
                 self.frameadditems.close()
             self.datostablaproduct = templist;
-            
+
         self.filterduplicados()
         self.actualizarproductostable()
     def pagarventa(self,token,user):
@@ -210,8 +210,6 @@ class VentaView:
                         self.limparinput(token)
             else:
                 self.msm.messageError("No existen productos", "No se encontraron productos en el carrito")
-
-
 
     """ Function ayuda """
     def filterduplicados(self):

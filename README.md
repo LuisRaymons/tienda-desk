@@ -1,7 +1,5 @@
 # Tienda desarrollada en PYQT5(PYTHON)
-
-[![LRVA Asesorias](LRVA Asesorias "LRVA Asesorias")](https://drive.google.com/file/d/1KWxrBekfb4q_oSWyMH0HMp6QfURAp2U7/view "LRVA Asesorias")
-<img src=http://drive.google.com/uc?export=view&id=1KWxrBekfb4q_oSWyMH0HMp6QfURAp2U7>
+<img src="http://drive.google.com/uc?export=view&id=1KWxrBekfb4q_oSWyMH0HMp6QfURAp2U7">
 
 #### Herramientas utilizadas:
 - [PYTHON] [Descargar aqui](https://www.python.org/downloads/ "Descargar aqui")

@@ -7,7 +7,6 @@ from controller import UsuarioController
 from config import env
 import cv2
 import os
-import imutils
 import numpy as np
 from PIL import Image
 

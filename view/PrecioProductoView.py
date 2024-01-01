@@ -8,7 +8,6 @@ from controller import PrecioProducto
 from config import env
 import cv2
 import os
-import imutils
 import numpy as np
 from PIL import Image
 

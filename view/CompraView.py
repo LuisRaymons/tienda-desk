@@ -8,7 +8,6 @@ from view.Errors import ErrorGeneral
 from controller import CompraController
 from config import env
 import string, random
-import imutils
 import cv2
 import os
 

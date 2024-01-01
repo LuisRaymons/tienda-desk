@@ -12,7 +12,9 @@ class LoginController:
         urlapi = config.APIREQUEST + "login"
         args = {"email":correo, "password":password}
         response = requests.post(urlapi,params=args)
+        #print(response)
         data = response.json()
+
         return data
 
     def store(self,args):
